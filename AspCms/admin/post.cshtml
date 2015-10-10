@@ -1,0 +1,25 @@
+﻿@{
+    Page.Title = "Title goes here";
+    //Layout = "Your Layout Page goes here";
+
+    var mode = Post.Mode;
+    var slug = Post.Slug;
+}
+
+@if (!Post.Mode.IsEmpty())
+{ 
+    <div>
+    <form name="post" method="post" action="~/admin/post.ashx">
+        <input type="hidden" name="mode" value="@mode" />
+        <p>Title: <input type="text" name="postTitle" /></p>
+        <p>Content: <textarea name="postContent"></textarea></p>
+        <p><input type="submit" name="postSubmit" value="Create Post" /></p>
+    </form>
+</div>
+    
+}
+else 
+{
+    <p>This should display a list of posts</p>
+}
+
