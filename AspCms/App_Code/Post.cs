@@ -56,7 +56,6 @@ public class Post
             var result = PostRepository.Get(Slug);
 
             return result ?? CreatePostObject();
-            
         }
     }
 
@@ -64,10 +63,11 @@ public class Post
     {
         dynamic obj = new ExpandoObject();
 
+        obj.Id = 0;
         obj.Title = "";
         obj.Content = "";
         obj.DateCreated = DateTime.Now;
-        obj.DataPublished = null;
+        obj.DatePublished = null;
         obj.Slug = string.Empty;
         obj.AuthorId = null;
 

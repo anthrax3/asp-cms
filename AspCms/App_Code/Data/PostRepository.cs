@@ -49,14 +49,27 @@ public class PostRepository
     }
     
     // post metode ::::::>>>>
-    public static void Add(string title, string content, int authorId, string slug)
+    public static void Add(string title, string content, string slug, DateTime? datePublished, int authorId)
     { 
          using (var db = Database.Open("DefaultConnection"))
         {
 
-            var sql = "INSERT INTO Posts (Title, Content, AuthorId, Slug) " +
-                      "VALUES (@0, @1, @2, @3)" ;
-            db.Execute(sql, title, content, authorId, slug);
+            var sql = "INSERT INTO Posts (Title, Content, DatePublished, AuthorId, Slug) " +
+                      "VALUES (@0, @1, @2, @3, @4)" ;
+            db.Execute(sql, title, content, datePublished, authorId, slug);
+        }
+    }
+
+    //edit metoda ::::::>>>>
+
+    public static void Edit(int id, string title, string content, string slug, DateTime? datePublished, int authorId)
+    {
+        using (var db = Database.Open("DefaultConnection"))
+        {
+
+            var sql = "UPDATE Posts SET Title = @0, Content = @1, DatePublished = @2, AuthorId = @3, Slug = @4 " +
+                      "WHERE Id = @5";
+            db.Execute(sql, title, content, datePublished, authorId, slug, id);
         }
     }
 

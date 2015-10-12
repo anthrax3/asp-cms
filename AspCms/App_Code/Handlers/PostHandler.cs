@@ -25,17 +25,29 @@ public class PostHandler : IHttpHandler
 
     public void ProcessRequest(HttpContext context)
     {
+        //treba nam mode jer cemo u zavisnosti od njega, ako je edit da ispravljamo post ako je new da pravimo novi...
+        var mode = context.Request.Form["mode"];
+
         var title = context.Request.Form["postTitle"];
         var content = context.Request.Form["postContent"];
-        var slug = CreateSlug(title);
+        var slug = context.Request.Form["postSlug"];
+        var datePublished = context.Request.Form["postDatePublished"];
+        var id = context.Request.Form["postId"];
 
-        var result = PostRepository.Get(slug);
-        if (result != null)
+        if (string.IsNullOrWhiteSpace(slug))
         {
-            throw new HttpException(409, "Slug allready in use");
+            CreateSlug(title);
         }
 
-        PostRepository.Add(title, content, 1, slug);
+        if (mode == "edit")
+        {
+            EditPost(Convert.ToInt32(id), title, content, slug, datePublished, 1);
+        }
+        else if(mode == "new")
+        {
+            CreatePost(title, content, slug, datePublished, 1);
+
+        }
 
         context.Response.Redirect("~/admin/post/");     
     }
@@ -49,6 +61,44 @@ public class PostHandler : IHttpHandler
         return title;
     }
 
+    private static void CreatePost(string title, string content, string slug, string datePublished, int authorId)
+    {
+        // trying if post with specific slug exists
+        var result = PostRepository.Get(slug);
+        if (result != null)
+        {
+            throw new HttpException(409, "Slug allready in use");
+        }
 
+        DateTime? published = null;
+
+        if (!string.IsNullOrWhiteSpace(datePublished))
+        {
+            published = DateTime.Parse(datePublished);
+        }
+
+        PostRepository.Add(title, content, slug, published, authorId);
+    }
+
+
+    private static void EditPost( int id, string title, string content, string slug, string datePublished, int authorId)
+    {
+        // trying if post with specific slug exists
+        var result = PostRepository.Get(id);
+        if (result == null)
+        {
+            throw new HttpException(404, "No post with that id");
+        }
+
+        DateTime? published = null;
+
+        if (!string.IsNullOrWhiteSpace(datePublished))
+        {
+            published = DateTime.Parse(datePublished);
+        }
+
+        // PostRepository.Add(title, content, slug, published, authorId);
+        PostRepository.Edit(id, title, content, slug, published, authorId);
+    }
 
 }
