@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Web;
 using System.Web.WebPages;
+using WebMatrix.Data;
 
 /// <summary>
 /// Summary description for Post
@@ -51,7 +52,10 @@ public class Post
     public static dynamic Current
     {
         get 
-        { 
+        {
+            var result = PostRepository.Get(Slug);
+
+            return result ?? CreatePostObject();
             
         }
     }
@@ -64,12 +68,9 @@ public class Post
         obj.Content = "";
         obj.DateCreated = DateTime.Now;
         obj.DataPublished = null;
+        obj.Slug = string.Empty;
+        obj.AuthorId = null;
+
+        return obj;
     }
-
-
-
-
-
-
-
 }

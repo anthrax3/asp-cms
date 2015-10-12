@@ -29,27 +29,18 @@ public class PostHandler : IHttpHandler
         var content = context.Request.Form["postContent"];
         var slug = CreateSlug(title);
 
-        using (var db = Database.Open("DefaultConnection"))
+        var result = PostRepository.Get(slug);
+        if (result != null)
         {
-
-            var sql = "SELECT * FROM Posts WHERE Slug = @0";
-            var result = db.QuerySingle(sql, slug);
-            if (result != null)
-            {
-                throw new HttpException(409, "Slug allready in use");
-            }
-
-            sql = "INSERT INTO Posts (Title, Content, AuthorId, Slug) " +
-                      "VALUES (@0, @1, @2, @3)" ;
-            db.Execute(sql, title, content, 1, slug);
-
-            context.Response.Redirect("~/admin/post/");
-            
+            throw new HttpException(409, "Slug allready in use");
         }
 
+        PostRepository.Add(title, content, 1, slug);
 
+        context.Response.Redirect("~/admin/post/");     
     }
 
+    //metoda za formatiranje slug-a...
     private static string CreateSlug(string title)
     {
         title = title.ToLowerInvariant().Replace(" ", "-");

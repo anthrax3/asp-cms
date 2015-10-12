@@ -3,17 +3,25 @@
     //Layout = "Your Layout Page goes here";
 
     var mode = Post.Mode;
-    var slug = Post.Slug;
+    //var slug = Post.Slug;
 }
 
 @if (!Post.Mode.IsEmpty())
 { 
+    
+    var post = Post.Current;
+    
+    
     <div>
     <form name="post" method="post" action="~/admin/post.ashx">
         <input type="hidden" name="mode" value="@mode" />
-        <p>Title: <input type="text" name="postTitle" /></p>
-        <p>Content: <textarea name="postContent"></textarea></p>
-        <p><input type="submit" name="postSubmit" value="Create Post" /></p>
+        <p>Title: <input type="text" name="postTitle" value="@post.Title" /></p>
+        <p>Content: <textarea name="postContent">@post.Content</textarea></p>
+        <p>Slug: <input type="text" name="postSlug" value="@post.Slug" /></p>
+        <p>Date Published: <input type="text" name="postDatePublished" value="@post.DatePublished" /></p>
+        
+        
+         <p><input type="submit" name="postSubmit" value="Submit" /></p>
     </form>
 </div>
     
