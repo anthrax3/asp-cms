@@ -40,7 +40,7 @@ public class Post
     {
         get
         {
-            if (Mode == "edit")
+            if (Mode != "new")
             {
                 return Page.UrlData[1];
             }

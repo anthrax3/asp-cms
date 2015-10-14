@@ -39,11 +39,17 @@ public class PostRepository
         }
     }
 
-    public static IEnumerable<dynamic> GetAll()
+    public static IEnumerable<dynamic> GetAll(string orderBy = null)
     {
         using (var db = Database.Open(_connectionString))
         {
             var sql = "SELECT * FROM Posts";
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sql += " ORDER BY " + orderBy;
+            }
+
             return db.Query(sql);
         }
     }
@@ -51,7 +57,7 @@ public class PostRepository
     // post metode ::::::>>>>
     public static void Add(string title, string content, string slug, DateTime? datePublished, int authorId)
     { 
-         using (var db = Database.Open("DefaultConnection"))
+         using (var db = Database.Open(_connectionString))
         {
 
             var sql = "INSERT INTO Posts (Title, Content, DatePublished, AuthorId, Slug) " +
@@ -64,12 +70,22 @@ public class PostRepository
 
     public static void Edit(int id, string title, string content, string slug, DateTime? datePublished, int authorId)
     {
-        using (var db = Database.Open("DefaultConnection"))
+        using (var db = Database.Open(_connectionString))
         {
 
             var sql = "UPDATE Posts SET Title = @0, Content = @1, DatePublished = @2, AuthorId = @3, Slug = @4 " +
                       "WHERE Id = @5";
             db.Execute(sql, title, content, datePublished, authorId, slug, id);
+        }
+    }
+
+    public static void Remove(string slug)
+    {
+        using (var db = Database.Open(_connectionString))
+        {
+
+            var sql = "DELETE FROM Posts WHERE Slug = @0 ";
+            db.Execute(sql, slug);
         }
     }
 

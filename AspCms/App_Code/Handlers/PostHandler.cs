@@ -48,6 +48,10 @@ public class PostHandler : IHttpHandler
             CreatePost(title, content, slug, datePublished, 1);
 
         }
+        else if (mode == "delete")
+        {
+            DeletePost(slug);
+        }
 
         context.Response.Redirect("~/admin/post/");     
     }
@@ -99,6 +103,11 @@ public class PostHandler : IHttpHandler
 
         // PostRepository.Add(title, content, slug, published, authorId);
         PostRepository.Edit(id, title, content, slug, published, authorId);
+    }
+
+    private static void DeletePost(string slug)
+    {
+        PostRepository.Remove(slug);
     }
 
 }
