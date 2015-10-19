@@ -33,6 +33,9 @@ public class PostHandler : IHttpHandler
         var slug = context.Request.Form["postSlug"];
         var datePublished = context.Request.Form["postDatePublished"];
         var id = context.Request.Form["postId"];
+        var postTags = context.Request.Form["postTags"];
+        var tags = postTags.Split(',').Select(v => Convert.ToInt32(v));
+
 
         if (string.IsNullOrWhiteSpace(slug))
         {
@@ -41,11 +44,11 @@ public class PostHandler : IHttpHandler
 
         if (mode == "edit")
         {
-            EditPost(Convert.ToInt32(id), title, content, slug, datePublished, 1);
+            EditPost(Convert.ToInt32(id), title, content, slug, datePublished, 1, tags);
         }
         else if(mode == "new")
         {
-            CreatePost(title, content, slug, datePublished, 1);
+            CreatePost(title, content, slug, datePublished, 1, tags);
 
         }
         else if (mode == "delete")
@@ -65,7 +68,7 @@ public class PostHandler : IHttpHandler
         return title;
     }
 
-    private static void CreatePost(string title, string content, string slug, string datePublished, int authorId)
+    private static void CreatePost(string title, string content, string slug, string datePublished, int authorId, IEnumerable<int> tags)
     {
         // trying if post with specific slug exists
         var result = PostRepository.Get(slug);
@@ -81,11 +84,11 @@ public class PostHandler : IHttpHandler
             published = DateTime.Parse(datePublished);
         }
 
-        PostRepository.Add(title, content, slug, published, authorId);
+        PostRepository.Add(title, content, slug, published, authorId, tags);
     }
 
 
-    private static void EditPost( int id, string title, string content, string slug, string datePublished, int authorId)
+    private static void EditPost(int id, string title, string content, string slug, string datePublished, int authorId, IEnumerable<int> tags)
     {
         // trying if post with specific slug exists
         var result = PostRepository.Get(id);
@@ -102,7 +105,7 @@ public class PostHandler : IHttpHandler
         }
 
         // PostRepository.Add(title, content, slug, published, authorId);
-        PostRepository.Edit(id, title, content, slug, published, authorId);
+        PostRepository.Edit(id, title, content, slug, published, authorId, tags);
     }
 
     private static void DeletePost(string slug)

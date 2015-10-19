@@ -1,6 +1,6 @@
 ﻿@{
     
-    Page.Title = "Post management";
+    Page.Title = "Account management";
     Layout = "~/admin/_AdminLayout.cshtml";
 
     var mode = Post.Mode;
@@ -10,21 +10,22 @@
 @if (!Post.Mode.IsEmpty())
 {
 
-    var post = Post.Current;
-    var tags = TagRepository.GetAll();
-    var posttags = (IEnumerable<dynamic>)post.tags;
+    //var post = Post.Current;
+    //var tags = TagRepository.GetAll();
+    //var postTags = (IEnumerable<dynamic>)post.Tags;
 
     <div>
-    <form name="post" method="post" action="~/admin/post.ashx">
+    <form name="account" method="post" action="~/admin/account.ashx">
         <input type="hidden" name="mode" value="@mode" />
-        <input type="hidden" name="postId" value="@post.Id" />
+        <input type="hidden" name="accountId" value="@post.Id" />
         
-        <p>Title: <input type="text" name="postTitle" value="@post.Title" /></p>
-        <p>Content: <textarea name="postContent">@post.Content</textarea></p>
-        <p>Slug: <input type="text" name="postSlug" value="@post.Slug" /></p>
-        <p>Date Published: <input type="text" name="postDatePublished" value="@post.DatePublished" /></p>
-        <p>
-        <select name="postTags" multiple>
+        <p>Username: <input type="text" name="accountName" value="@post.Title" /></p>
+        <p>Password: <input type="password" name="accountPassword1" value="@post.Content" /></p>
+        <p>Password: <input type="password" name="accountPassword2" value="@post.Slug" /></p>
+        
+        <p>Email: <input type="text" name="accountEmail" value="@Post.Slug" /> </p>
+    <p>
+        <select name="accountRoles" multiple>
             @foreach (var tag in tags)
             {
                

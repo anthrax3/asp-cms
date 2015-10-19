@@ -7,14 +7,10 @@ using System.Web.WebPages;
 using WebMatrix.Data;
 
 /// <summary>
-/// Summary description for Post
+/// Summary description for Account
 /// </summary>
-public class Post
+public class Account
 {
-	public Post()
-	{
-		
-	}
 
     private static WebPageRenderingBase Page 
     {
