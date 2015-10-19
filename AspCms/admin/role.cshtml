@@ -3,21 +3,21 @@
     Page.Title = "Role management";
     Layout = "~/admin/_AdminLayout.cshtml";
 
-    var mode = Tag.Mode;
+    var mode = Role.Mode;
   
 }
 
 @if (!Post.Mode.IsEmpty())
 {
 
-    //var tag = Tag.Current;
+    var role = Role.Current;
 
     <div>
     <form name="role" method="post" action="~/admin/role.ashx">
         <input type="hidden" name="mode" value="@mode" />
-        <input type="hidden" name="roleId" value="@tag.Id" />
+        <input type="hidden" name="roleId" value="@role.Id" />
         
-        <p>Name: <input type="text" name="roleName" value="@tag.Name" /></p>
+        <p>Name: <input type="text" name="roleName" value="@role.Name" /></p>
         
          <p><input type="submit" name="roleSubmit" value="Submit" /></p>
     </form>
@@ -26,19 +26,18 @@
 }
 else 
 {
+    
+    <p><<a href="~/admin/role/new">Create New Role</a></p>
     var grid = new WebGrid(
-        source: PostRepository.GetAll(orderBy: "DateCreated DESC"),
+        source: RoleRepository.GetAll(orderBy: "Name"),
         rowsPerPage: 30
         );
     
     @grid.GetHtml(
     columns: grid.Columns(
-        grid.Column(format: @<a href="~/admin/post/edit/@item.Slug">Edit</a>),
-        grid.Column(format: @<a href="~/admin/post/delete/@item.Slug">Delete</a>),  
-        grid.Column("Title"),
-        grid.Column("DateCreated", header: "Date Created"),
-        grid.Column("DatePublished", header: "Published"),
-        grid.Column("AuthorId", header: "Author")
+        grid.Column(format: @<a href="~/admin/role/edit/@item.Name">Edit</a>),
+        grid.Column(format: @<a href="~/admin/role/delete/@item.Name">Delete</a>),  
+        grid.Column("Name")
     )
    );
 

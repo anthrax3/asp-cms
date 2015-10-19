@@ -6,10 +6,8 @@ using System.Web;
 using System.Web.WebPages;
 using WebMatrix.Data;
 
-/// <summary>
-/// Summary description for Account
-/// </summary>
-public class Account
+
+public class Role
 {
 
     private static WebPageRenderingBase Page 
@@ -32,9 +30,7 @@ public class Account
         }
     }
 
-    // admin/account/edit/username
-
-    public static string Username
+    public static string Name
     {
         get
         {
@@ -51,20 +47,18 @@ public class Account
     {
         get 
         {
-            var result = AccountRepository.Get(Username);
+            var result = RoleRepository.Get(Name);
 
-            return result ?? CreateAccountObject();
+            return result ?? CreateRoleObject();
         }
     }
 
-    private static dynamic CreateAccountObject()
+    private static dynamic CreateRoleObject()
     {
         dynamic obj = new ExpandoObject();
 
         obj.Id = 0;
-        obj.Username = "";
-        obj.Password = "";
-        obj.Email = string.Empty;
+        obj.Name = string.Empty;
 
         return obj;
     }

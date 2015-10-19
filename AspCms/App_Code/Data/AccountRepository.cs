@@ -2,38 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using WebMatrix.Data;
 
 
-public class RoleRepository
+public class AccountRepository
 {
     private static readonly string _connectionString = "DefaultConnection";
 
     // OVO JE KLASA KOJA SLUZI ZA UPIS I ISPIS TAGOVA IZ BAZE. NJENE METODE SU STATICKE 
     // PA SE MOGU KORISTITI BEZ INSTANCIRANJA KLASE U OSTATKU PROJEKTA GDJE ZATREBA...
 
-	public RoleRepository()
-	{
-
-
-	}
 
     // get metode ::::::>>>>
     public static dynamic Get(int id)
     {
         using (var db = Database.Open(_connectionString))
         {
-            var sql = "SELECT * FROM Roles WHERE ID = @0";
+            var sql = "SELECT * FROM Users WHERE ID = @0";
             return db.QuerySingle(sql, id);
         }
     }
 
-    public static dynamic Get(string name)
+    public static dynamic Get(string username)
     {
         using (var db = Database.Open(_connectionString))
         {
-            var sql = "SELECT * FROM Roles WHERE Name = @0";
-            return db.QuerySingle(sql, name);
+            var sql = "SELECT * FROM Users WHERE Username = @0";
+            return db.QuerySingle(sql, username);
         }
     }
 
@@ -41,7 +37,7 @@ public class RoleRepository
     {
         using (var db = Database.Open(_connectionString))
         {
-            var sql = "SELECT * FROM Roles";
+            var sql = "SELECT * FROM Users";
 
             if (!string.IsNullOrEmpty(where))
             {
@@ -58,66 +54,58 @@ public class RoleRepository
     }
     
     // post metode ::::::>>>>
-    public static void Add(string name)
+    public static void Add(string username, string password, string email)
     { 
          using (var db = Database.Open(_connectionString))
         {
 
-            var sql = "SELECT * FROM Users WHERE Name = @0";
-            var roleName = db.Execute(sql, name);
+            var sql = "SELECT * FROM Users WHERE Username = @0";
+            var user = db.Execute(sql, username);
 
-            if (roleName != null)
+            if (user != null)
             {
                 throw new Exception("User allready exists!");
             }
 
             sql = "INSERT INTO Users (Username, Password, Email)" + 
                 " VALUES (@0, @1, @2)";
-             // TODO: Execute sql statement...
+
+            db.Execute(sql, username, Crypto.HashPassword(password), email);
 
         }
     }
 
     //edit metoda ::::::>>>>
 
-    public static void Edit(int id, string name)
+    public static void Edit(int id, string username, string password, string email)
     {
         using (var db = Database.Open(_connectionString))
         {
 
-            var sql = "UPDATE Roles SET Name = @0,  WHERE Id = @1";
-            // TODO: db.Execute(sql, name, id);
+            var sql = "UPDATE Users SET Username = @0, Password = @1, Email = @2  WHERE Id = @3";
+            db.Execute(sql, username, Crypto.HashPassword(password), email, id);
+
+
+
         }
     }
 
-    public static void Remove(string roleName)
+    public static void Remove(string username)
     {
-        using (var db = Database.Open(_connectionString))
+        var user = Get(username);
+        if (user == null)
         {
-            var role = Get(roleName);
-
-            if (role == null)
-            {
-                return;
-            }
-
-            var sql = "DELETE FROM Roles WHERE Name = @0 ";
-            db.Execute(sql, roleName);
-
-            sql = "DELETE FROM UsersRolesMap WHERE RoleId = @0";
-            db.Execute(sql, role.Id);
+            return;
         }
-    }
-
-    public static IEnumerable<dynamic> GetRolesForUser(int id)
-    {
-        var sql = "SELECT * FROM Roles r" + 
-            " INNER JOIN UsersRolesMap m ON r.Id = m.RoleId" +
-            " WHERE m.UserId = @0";
 
         using (var db = Database.Open(_connectionString))
         {
-            return db.Query(sql, id);
+
+            var sql = "DELETE FROM Users WHERE Username = @0 ";
+            db.Execute(sql, username);
+
+            sql = "DELETE FROM UsersRolesMap WHERE UserId = @0";
+            db.Execute(sql, user.Id);
         }
     }
 

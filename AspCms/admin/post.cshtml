@@ -12,7 +12,7 @@
 
     var post = Post.Current;
     var tags = TagRepository.GetAll();
-    var posttags = (IEnumerable<dynamic>)post.tags;
+    var postTags = (IEnumerable<dynamic>)post.tags;
 
     <div>
     <form name="post" method="post" action="~/admin/post.ashx">
