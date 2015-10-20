@@ -63,18 +63,13 @@ public class RoleRepository
          using (var db = Database.Open(_connectionString))
         {
 
-            var sql = "SELECT * FROM Users WHERE Name = @0";
-            var roleName = db.Execute(sql, name);
+            //var sql = "SELECT * FROM Roles WHERE Name = @0";
+            //var roleName = db.Execute(sql, name);
 
-            if (roleName != null)
-            {
-                throw new Exception("User allready exists!");
-            }
-
-            sql = "INSERT INTO Users (Username, Password, Email)" + 
-                " VALUES (@0, @1, @2)";
+            var sql = "INSERT INTO Roles (Name)" + 
+                " VALUES (@0)";
              // TODO: Execute sql statement...
-
+            db.Execute(sql, name);
         }
     }
 
@@ -85,8 +80,9 @@ public class RoleRepository
         using (var db = Database.Open(_connectionString))
         {
 
-            var sql = "UPDATE Roles SET Name = @0,  WHERE Id = @1";
-            // TODO: db.Execute(sql, name, id);
+            var sql = "UPDATE Roles SET Name = @0  WHERE Id = @1";
+            db.Execute(sql, name, id);
+
         }
     }
 

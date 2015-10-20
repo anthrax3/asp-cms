@@ -13,7 +13,7 @@
     var account = Account.Current;
     var roles = RoleRepository.GetAll();
 
-    var rolesForUser = WebUser.GetRolesForUser(account.Id);
+    var rolesForUser = WebUser.GetRolesForUser((int)account.Id);
     
     //var postTags = (IEnumerable<dynamic>)post.Tags;
 
@@ -45,7 +45,7 @@
 }
 else 
 {
-    <p><<a href="~/admin/account/new">Create New User</a></p>
+    <p><a href="~/admin/account/new">Create New User</a></p>
 
     
     var grid = new WebGrid(
