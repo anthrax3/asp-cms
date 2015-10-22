@@ -5,6 +5,11 @@
 
     var mode = Post.Mode;
     //var slug = Post.Slug;
+
+    if (!WebUser.HasRole(UserRoles.Admin))
+    {
+        Response.Redirect("~/admin/");
+    }
 }
 
 @if (!Post.Mode.IsEmpty())
@@ -19,6 +24,7 @@
 
     <div>
     <form name="account" method="post" action="~/admin/account.ashx">
+        @AntiForgery.GetHtml()
         <input type="hidden" name="mode" value="@mode" />
         <input type="hidden" name="accountId" value="@account.Id" />
         

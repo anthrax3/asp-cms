@@ -2,9 +2,26 @@
 <html>
     <head>
         <title>@Page.Title</title>
+        <link href="~/css/site.css" rel="stylesheet" type="text/css" />
+
         @RenderSection("head", required: false)
     </head>
     <body>
+        <header>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p class="site-title"><a href="~/">Simple CMS</a></p>    
+                </div>    
+                <div class="float-right">
+                    <nav>
+                        <ul id="menu">
+                            <li><a href="~/">Home</li>
+                            <li><a href="~/amin">Admin</li>
+                        </ul>
+                    </nav>    
+                </div>
+            </div>    
+        </header>
         @RenderBody()
     </body>
 </html>

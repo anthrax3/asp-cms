@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Helpers;
+using System.Web.SessionState;
 using WebMatrix.Data;
 
 /// <summary>
 /// Summary description for PostHandler
 /// </summary>
-public class AccountHandler : IHttpHandler
+public class AccountHandler : IHttpHandler, IReadOnlySessionState
 {
 
     public bool IsReusable
@@ -20,6 +21,21 @@ public class AccountHandler : IHttpHandler
 
     public void ProcessRequest(HttpContext context)
     {
+        AntiForgery.Validate();
+
+
+        if (!WebUser.IsAuthenticated)
+        {
+            throw new HttpException(401, "You must login !");
+        }
+
+
+        if (!WebUser.HasRole(UserRoles.Admin))
+        {
+            throw new HttpException(401, "You do not have permission to do this");
+        }
+
+
         //treba nam mode jer cemo u zavisnosti od njega, ako je edit da ispravljamo post ako je new da pravimo novi...
         var mode = context.Request.Form["mode"];
         var username = context.Request.Form["accountName"];

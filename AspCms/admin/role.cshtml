@@ -4,7 +4,11 @@
     Layout = "~/admin/_AdminLayout.cshtml";
 
     var mode = Role.Mode;
-  
+    
+    if (!WebUser.HasRole(UserRoles.Admin))
+    {
+        Response.Redirect("~/admin/");
+    }
 }
 
 @if (!Post.Mode.IsEmpty())
@@ -14,6 +18,7 @@
 
     <div>
     <form name="role" method="post" action="~/admin/role.ashx">
+        @AntiForgery.GetHtml()
         <input type="hidden" name="mode" value="@mode" />
         <input type="hidden" name="roleId" value="@role.Id" />
         

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Helpers;
+using System.Web.SessionState;
 using WebMatrix.Data;
 
 /// <summary>
 /// Summary description for PostHandler
 /// </summary>
-public class PostHandler : IHttpHandler
+public class PostHandler : IHttpHandler, IReadOnlySessionState
 {
 	public PostHandler()
 	{
@@ -25,6 +27,22 @@ public class PostHandler : IHttpHandler
 
     public void ProcessRequest(HttpContext context)
     {
+        AntiForgery.Validate();
+
+        if (!WebUser.IsAuthenticated)
+        {
+            throw new HttpException(401, "You must login !");
+        }
+
+        if (!WebUser.HasRole(UserRoles.Admin) &&
+            !WebUser.HasRole(UserRoles.Editor) &&
+            !WebUser.HasRole(UserRoles.Author))
+        {
+            throw new HttpException(401, "You do not have permission to do this");
+        }
+
+
+
         //treba nam mode jer cemo u zavisnosti od njega, ako je edit da ispravljamo post ako je new da pravimo novi...
         var mode = context.Request.Form["mode"];
 
@@ -34,8 +52,25 @@ public class PostHandler : IHttpHandler
         var datePublished = context.Request.Form["postDatePublished"];
         var id = context.Request.Form["postId"];
         var postTags = context.Request.Form["postTags"];
-        var tags = postTags.Split(',').Select(v => Convert.ToInt32(v));
+        var authorId = context.Request.Form["postAuthorId"];
 
+        IEnumerable<int> tags = new int[] { };
+
+        if (!string.IsNullOrEmpty(postTags))
+        {
+            tags = postTags.Split(',').Select(v => Convert.ToInt32(v));
+            
+        }
+
+
+        if ((mode == "edit" || mode == "delete") && WebUser.HasRole(UserRoles.Author))
+        {
+            if (WebUser.UserId != Convert.ToInt32(authorId))
+            {
+                throw new HttpException(401, "You do not have permission to do this");
+
+            }
+        }
 
         if (string.IsNullOrWhiteSpace(slug))
         {
@@ -44,11 +79,11 @@ public class PostHandler : IHttpHandler
 
         if (mode == "edit")
         {
-            EditPost(Convert.ToInt32(id), title, content, slug, datePublished, 1, tags);
+            EditPost(Convert.ToInt32(id), title, content, slug, datePublished, Convert.ToInt32(authorId), tags);
         }
         else if(mode == "new")
         {
-            CreatePost(title, content, slug, datePublished, 1, tags);
+            CreatePost(title, content, slug, datePublished, WebUser.UserId, tags);
 
         }
         else if (mode == "delete")

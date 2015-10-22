@@ -20,6 +20,20 @@ public class WebUser
         }
     }
 
+
+    public static bool HasRole(string rolename)
+    {
+        var roles = GetRolesForUser();
+
+        return roles.Contains(rolename);
+
+    }
+
+    public static IEnumerable<string> GetRolesForUser()
+    {
+        return GetRolesForUser(WebUser.UserId);
+    }
+
     public static IEnumerable<string> GetRolesForUser(int id)
     {
         return RoleRepository.GetRolesForUser(id).Select(r => (string)r.Name);
