@@ -23,15 +23,31 @@ public class PostRepository
 
     // get metode ::::::>>>>
 
-    public static IEnumerable<dynamic> GetPublishedPosts()
+    public static IEnumerable<dynamic> GetPublishedPosts(int count = 0)
+    {
+        var topClause = count > 0 ? string.Format(" TOP {0} ", count) : string.Empty;
+
+        var sql = string.Format("SELECT {0} p.*, t.Id as TagId, t.Name as TagName, t.UrlFriendlyName as TagUrlFriendlyName, u.Username FROM Posts p "
+                    + "LEFT JOIN PostsTagsMap m ON p.Id = m.PostId "
+                    + "LEFT JOIN Tags t ON t.Id = m.TagId "
+                    + " INNER JOIN Users u ON u.Id = p.AuthorId "
+                    + " WHERE DatePublished IS NOT NULL AND DatePublished < getdate() "
+                    + " ORDER BY DatePublished DESC ", topClause);
+                    
+
+       return DoGet(sql);
+    }
+
+    public static IEnumerable<dynamic> GetPublishedPostsByTag(string tagName)
     {
         var sql = "SELECT p.*, t.Id as TagId, t.Name as TagName, t.UrlFriendlyName as TagUrlFriendlyName, u.Username FROM Posts p "
                     + "LEFT JOIN PostsTagsMap m ON p.Id = m.PostId "
                     + "LEFT JOIN Tags t ON t.Id = m.TagId "
                     + " INNER JOIN Users u ON u.Id = p.AuthorId "
-                    + " WHERE DatePublished IS NOT NULL AND DatePublished < getdate()";
+                    + " WHERE DatePublished IS NOT NULL AND DatePublished < getdate() "
+                    + " AND t.UrlFriendlyName = @0";
 
-       return DoGet(sql);
+        return DoGet(sql, tagName);
     }
 
     public static dynamic Get(int id)
@@ -150,7 +166,6 @@ public class PostRepository
         }
     }
 
-
     private static IEnumerable<dynamic> DoGet(string sql, params object[] values)
     {
         using (var db = Database.Open(_connectionString))
@@ -205,18 +220,8 @@ public class PostRepository
         post.AuthorId = obj.AuthorId;
         post.Slug = obj.Slug;
         post.Tags = new List<dynamic>();
-        post.Username = obj.Username;
+        post.Username = string.Empty;
 
         return post;
-
     }
-
-
-
-
-
-
-
-
-
 }
